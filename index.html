@@ -1,10 +1,205 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My CI/CD Project</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --board: #edf2ef;
+      --ink: #1b2333;
+      --muted: #55607a;
+      --line: #c5d0ca;
+      --blue: #2454c5;
+      --green: #1e8a5a;
+      --hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+      --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { height: 100%; margin: 0; }
+
+    body {
+      background: var(--board);
+      color: var(--ink);
+      font-family: var(--body);
+      line-height: 1.55;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+    }
+
+    main { width: 100%; max-width: 920px; }
+
+    h1 {
+      font-family: var(--hand);
+      font-weight: 700;
+      font-size: clamp(2.6rem, 7vw, 4.4rem);
+      line-height: 1.05;
+      margin: 0 0 10px;
+    }
+
+    .version {
+      display: inline-block;
+      font-family: var(--hand);
+      font-weight: 700;
+      font-size: 1.7rem;
+      color: var(--green);
+      border: 2px solid var(--green);
+      border-radius: 6px 14px 8px 12px;
+      padding: 0 14px;
+      transform: rotate(-2deg);
+    }
+
+    .lead {
+      max-width: 52ch;
+      color: var(--muted);
+      margin: 18px 0 44px;
+    }
+
+    /* the flow, drawn like the whiteboard */
+    .flow {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    .node {
+      flex: 1;
+      border: 2px solid var(--ink);
+      border-radius: 4px 10px 5px 9px;
+      padding: 18px 16px 16px;
+      background: #f8fbf9;
+    }
+
+    .node strong {
+      display: block;
+      font-family: var(--hand);
+      font-size: 1.9rem;
+      line-height: 1.1;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 5px;
+    }
+
+    .node span {
+      display: block;
+      margin-top: 10px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    .arrow {
+      flex: 0 0 44px;
+      height: 2px;
+      background: var(--ink);
+      position: relative;
+    }
+
+    .arrow::after {
+      content: "";
+      position: absolute;
+      right: -1px;
+      top: -5px;
+      width: 10px;
+      height: 10px;
+      border-top: 2px solid var(--ink);
+      border-right: 2px solid var(--ink);
+      transform: rotate(45deg);
+    }
+
+    .node.end { border-color: var(--green); }
+    .node.end strong { color: var(--green); }
+
+    /* one moment of motion: a dot travels the flow once on load */
+    .packet {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 14px;
+      height: 14px;
+      margin-top: -7px;
+      border-radius: 50%;
+      background: var(--blue);
+      opacity: 0;
+      animation: travel 2.4s 0.4s ease-in-out 1 forwards;
+    }
+
+    @keyframes travel {
+      0%   { left: 0;                opacity: 1; }
+      90%  { left: calc(100% - 14px); opacity: 1; }
+      100% { left: calc(100% - 14px); opacity: 0; }
+    }
+
+    footer {
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--line);
+      color: var(--muted);
+      font-size: 0.9rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 24px;
+    }
+
+    @media (max-width: 720px) {
+      .flow { flex-direction: column; align-items: stretch; }
+      .arrow { flex: 0 0 34px; width: 2px; height: 34px; align-self: center; }
+      .arrow::after { right: -5px; top: auto; bottom: -1px; transform: rotate(135deg); }
+      .packet { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .packet { display: none; }
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello from GitHub Actions!</h1>
-  <p>Version 2</p>
+  <main>
+    <h1>Hello from GitHub Actions! <span class="version" id="version">Version 3</span></h1>
+
+    <p class="lead">
+      This page is one file in a GitHub repository. Every time that file
+      changes on <code>main</code>, GitHub Actions copies it to an S3 bucket
+      and the site you are reading updates.
+    </p>
+
+    <ol class="flow" aria-label="Deployment flow">
+      <li class="node">
+        <strong>GitHub</strong>
+        <span>You edit <code>index.html</code> and commit to <code>main</code>.</span>
+      </li>
+      <li class="arrow" aria-hidden="true"></li>
+      <li class="node">
+        <strong>GitHub Actions</strong>
+        <span>Checks that the file exists, then signs in to AWS.</span>
+      </li>
+      <li class="arrow" aria-hidden="true"></li>
+      <li class="node end">
+        <strong>S3 bucket</strong>
+        <span>Receives the new <code>index.html</code> and serves it here.</span>
+      </li>
+      <span class="packet" aria-hidden="true"></span>
+    </ol>
+
+    <footer>
+      <span>Hosted on Amazon S3, region ap-south-1</span>
+      <span id="loaded">Loaded just now</span>
+    </footer>
+  </main>
+
+  <script>
+    var t = new Date().toLocaleString();
+    document.getElementById("loaded").textContent = "Page loaded in your browser: " + t;
+  </script>
 </body>
 </html>
