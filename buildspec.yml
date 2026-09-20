@@ -1,0 +1,11 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo "Checking that index.html exists"
+      - test -f index.html
+  post_build:
+    commands:
+      - echo "Deploying index.html to S3"
+      - aws s3 cp index.html s3://YOUR-BUCKET-NAME/index.html
